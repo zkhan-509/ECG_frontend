@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 216 27% 15%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 216 27% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 27% 15%;
+
+    --primary: 197 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 216 27% 20%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 85%;
+    --muted-foreground: 216 20% 40%;
+
+    --accent: 161 95% 43%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 216 20% 25%;
+    --input: 216 20% 25%;
+    --ring: 197 100% 45%;
+
+    --radius: 1rem;
+
+    /* Medical Theme Custom Variables */
+    --medical-gradient: linear-gradient(135deg, hsl(216, 27%, 12%) 0%, hsl(216, 30%, 18%) 50%, hsl(220, 25%, 15%) 100%);
+    --card-shadow: 0 10px 40px -10px rgba(0, 168, 232, 0.15), 0 4px 20px -5px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 20px 60px -15px rgba(0, 168, 232, 0.25), 0 8px 30px -10px rgba(0, 0, 0, 0.4);
+    --glow-primary: 0 0 30px rgba(0, 168, 232, 0.3);
+    --glow-success: 0 0 30px rgba(6, 214, 160, 0.3);
+    
+    /* Sidebar */
+    --sidebar-background: 216 27% 12%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 197 100% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 216 27% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 216 20% 20%;
+    --sidebar-ring: 197 100% 45%;
+  }
+
+  .dark {
+    --background: 216 27% 15%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 216 27% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+    background: var(--medical-gradient);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer components {
+  .medical-card {
+    @apply bg-card text-card-foreground rounded-2xl p-6;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+
+  .medical-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .medical-gradient-bg {
+    background: var(--medical-gradient);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+
+  .btn-medical {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(197, 100%, 35%) 100%);
+    box-shadow: 0 4px 15px rgba(0, 168, 232, 0.3);
+  }
+
+  .btn-medical:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 168, 232, 0.4);
+  }
+
+  .btn-success {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(161, 95%, 35%) 100%);
+    box-shadow: 0 4px 15px rgba(6, 214, 160, 0.3);
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(6, 214, 160, 0.4);
+  }
+
+  .stat-card {
+    @apply bg-card text-card-foreground rounded-2xl p-5 relative overflow-hidden;
+    box-shadow: var(--card-shadow);
+  }
+
+  .stat-card::before {
+    content: '';
+    @apply absolute top-0 right-0 w-24 h-24 rounded-full opacity-10;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    transform: translate(30%, -30%);
+  }
+
+  .input-medical {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-muted bg-white/5 text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none transition-all duration-300;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200;
+  }
+
+  .sidebar-item.active {
+    @apply bg-primary/20 text-primary font-medium;
+    box-shadow: inset 3px 0 0 hsl(var(--primary));
+  }
+
+  .ecg-line {
+    stroke: hsl(var(--primary));
+    stroke-width: 2;
+    fill: none;
+    filter: drop-shadow(0 0 3px rgba(0, 168, 232, 0.5));
+  }
+
+  .pulse-animation {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .slide-in {
+    animation: slideIn 0.3s ease-out forwards;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
