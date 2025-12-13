@@ -1,6 +1,8 @@
+
 import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { MedicalCard } from "@/components/shared/MedicalCard";
+import { InfoItem } from "@/components/shared/InfoItem";
 import { Button } from "@/components/ui/button";
 import {
   Activity,
@@ -11,6 +13,7 @@ import {
   Info,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { signalInfo } from "@/utils/data/signalDisplayData";
 
 const SignalDisplay = () => {
   const location = useLocation();
@@ -22,49 +25,33 @@ const SignalDisplay = () => {
   const generateECGData = () => {
     const data: number[] = [];
     const samplingRate = 360;
-    const duration = 10; // seconds
+    const duration = 10;
     const totalSamples = samplingRate * duration;
 
     for (let i = 0; i < totalSamples; i++) {
       const t = i / samplingRate;
-      const beatPhase = (t % 0.8) / 0.8; // 75 BPM
+      const beatPhase = (t % 0.8) / 0.8;
 
       let voltage = 0;
 
-      // P wave
       if (beatPhase >= 0.0 && beatPhase < 0.1) {
         voltage = 0.15 * Math.sin(Math.PI * beatPhase / 0.1);
-      }
-      // PR segment
-      else if (beatPhase >= 0.1 && beatPhase < 0.16) {
+      } else if (beatPhase >= 0.1 && beatPhase < 0.16) {
         voltage = 0;
-      }
-      // Q wave
-      else if (beatPhase >= 0.16 && beatPhase < 0.18) {
+      } else if (beatPhase >= 0.16 && beatPhase < 0.18) {
         voltage = -0.1 * Math.sin(Math.PI * (beatPhase - 0.16) / 0.02);
-      }
-      // R wave
-      else if (beatPhase >= 0.18 && beatPhase < 0.22) {
+      } else if (beatPhase >= 0.18 && beatPhase < 0.22) {
         voltage = 1.0 * Math.sin(Math.PI * (beatPhase - 0.18) / 0.04);
-      }
-      // S wave
-      else if (beatPhase >= 0.22 && beatPhase < 0.26) {
+      } else if (beatPhase >= 0.22 && beatPhase < 0.26) {
         voltage = -0.2 * Math.sin(Math.PI * (beatPhase - 0.22) / 0.04);
-      }
-      // ST segment
-      else if (beatPhase >= 0.26 && beatPhase < 0.35) {
+      } else if (beatPhase >= 0.26 && beatPhase < 0.35) {
         voltage = 0;
-      }
-      // T wave
-      else if (beatPhase >= 0.35 && beatPhase < 0.55) {
+      } else if (beatPhase >= 0.35 && beatPhase < 0.55) {
         voltage = 0.3 * Math.sin(Math.PI * (beatPhase - 0.35) / 0.2);
-      }
-      // Baseline
-      else {
+      } else {
         voltage = 0;
       }
 
-      // Add noise
       voltage += (Math.random() - 0.5) * 0.02;
       data.push(voltage);
     }
@@ -80,7 +67,6 @@ const SignalDisplay = () => {
 
     const data = generateECGData();
     
-    // Set canvas size
     canvas.width = canvas.offsetWidth * 2;
     canvas.height = canvas.offsetHeight * 2;
     ctx.scale(2, 2);
@@ -88,15 +74,12 @@ const SignalDisplay = () => {
     const width = canvas.offsetWidth;
     const height = canvas.offsetHeight;
 
-    // Clear canvas
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, width, height);
 
-    // Draw grid
     ctx.strokeStyle = "rgba(0, 168, 232, 0.1)";
     ctx.lineWidth = 0.5;
 
-    // Minor grid
     for (let x = 0; x < width; x += 10) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -110,7 +93,6 @@ const SignalDisplay = () => {
       ctx.stroke();
     }
 
-    // Major grid
     ctx.strokeStyle = "rgba(0, 168, 232, 0.25)";
     ctx.lineWidth = 1;
     for (let x = 0; x < width; x += 50) {
@@ -126,7 +108,6 @@ const SignalDisplay = () => {
       ctx.stroke();
     }
 
-    // Draw ECG signal
     ctx.beginPath();
     ctx.strokeStyle = "#00a8e8";
     ctx.lineWidth = 2;
@@ -150,7 +131,6 @@ const SignalDisplay = () => {
     }
     ctx.stroke();
 
-    // Add glow effect
     ctx.shadowColor = "#00a8e8";
     ctx.shadowBlur = 10;
     ctx.stroke();
@@ -244,17 +224,8 @@ const SignalDisplay = () => {
               Signal Information
             </h2>
             <div className="space-y-4">
-              {[
-                { label: "Sampling Rate", value: "360 Hz" },
-                { label: "Duration", value: "10 seconds" },
-                { label: "Channels", value: "Lead II" },
-                { label: "Resolution", value: "12-bit" },
-                { label: "Heart Rate", value: "75 BPM" },
-              ].map((item, index) => (
-                <div key={index} className="flex justify-between items-center py-2 border-b border-muted/20 last:border-0">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className="text-sm font-medium text-card-foreground">{item.value}</span>
-                </div>
+              {signalInfo.map((item, index) => (
+                <InfoItem key={index} label={item.label} value={item.value} />
               ))}
             </div>
           </MedicalCard>

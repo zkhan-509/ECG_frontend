@@ -12,6 +12,8 @@ import {
   FileText,
 } from "lucide-react";
 import { toast } from "sonner";
+import { allowedFormats, fileRequirements } from "@/utils/data/uploadECGData";
+import { validateECGFile } from "@/utils/validation";
 
 const UploadECG = () => {
   const location = useLocation();
@@ -21,8 +23,6 @@ const UploadECG = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-
-  const allowedFormats = [".csv", ".mat", ".txt"];
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -34,32 +34,19 @@ const UploadECG = () => {
     setIsDragging(false);
   }, []);
 
-  const validateFile = (file: File) => {
-    const extension = "." + file.name.split(".").pop()?.toLowerCase();
-    if (!allowedFormats.includes(extension)) {
-      toast.error(`Invalid file format. Please upload ${allowedFormats.join(", ")} files.`);
-      return false;
-    }
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error("File size exceeds 50MB limit.");
-      return false;
-    }
-    return true;
-  };
-
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && validateFile(droppedFile)) {
+    if (droppedFile && validateECGFile(droppedFile, allowedFormats)) {
       setFile(droppedFile);
     }
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && validateFile(selectedFile)) {
+    if (selectedFile && validateECGFile(selectedFile, allowedFormats)) {
       setFile(selectedFile);
     }
   };
@@ -70,7 +57,6 @@ const UploadECG = () => {
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 100) {
@@ -224,13 +210,7 @@ const UploadECG = () => {
               File Requirements
             </h2>
             <ul className="space-y-3">
-              {[
-                "CSV files with time-voltage columns",
-                "MAT files from MATLAB",
-                "TXT files with ECG data",
-                "Sampling rate: 360 Hz recommended",
-                "Duration: 10-30 seconds",
-              ].map((item, index) => (
+              {fileRequirements.map((item, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <CheckCircle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
                   <span>{item}</span>

@@ -1,28 +1,36 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { MedicalCard } from "@/components/shared/MedicalCard";
 import { ECGWaveform } from "@/components/shared/ECGWaveform";
+import { FormInput } from "@/components/shared/FormInput";
 import { Heart, Mail, Lock, Stethoscope, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
+const formFields = [
+  { label: "Email Address", type: "email", placeholder: "doctor@hospital.com", icon: Mail, key: "email" as const },
+  { label: "Password", type: "password", placeholder: "••••••••", icon: Lock, key: "password" as const },
+];
+
 const DoctorLogin = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate login
     setTimeout(() => {
       toast.success("Welcome back, Doctor!");
       navigate("/doctor/dashboard");
       setIsLoading(false);
     }, 1500);
+  };
+
+  const updateField = (key: keyof typeof formData) => (value: string) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -74,39 +82,17 @@ const DoctorLogin = () => {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-card-foreground">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  type="email"
-                  placeholder="doctor@hospital.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-12 bg-card border-muted/50 text-card-foreground"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-card-foreground">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-12 bg-card border-muted/50 text-card-foreground"
-                  required
-                />
-              </div>
-            </div>
+            {formFields.map((field) => (
+              <FormInput
+                key={field.key}
+                label={field.label}
+                type={field.type}
+                placeholder={field.placeholder}
+                icon={field.icon}
+                value={formData[field.key]}
+                onChange={updateField(field.key)}
+              />
+            ))}
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -116,9 +102,9 @@ const DoctorLogin = () => {
                 />
                 <span className="text-muted-foreground">Remember me</span>
               </label>
-              <a href="#" className="text-primary hover:underline">
+              <Link to="/forgot-password" className="text-primary hover:underline">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <Button
@@ -142,7 +128,16 @@ const DoctorLogin = () => {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-muted/30 text-center">
+          <div className="mt-6 pt-6 border-t border-muted/30 text-center space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-primary font-medium hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
             <p className="text-sm text-muted-foreground">
               Are you a patient?{" "}
               <Link

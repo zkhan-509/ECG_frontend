@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import DoctorLogin from "./pages/DoctorLogin";
 import PatientLogin from "./pages/PatientLogin";
+
 import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
 import UploadECG from "./pages/UploadECG";
@@ -16,6 +18,8 @@ import CADResult from "./pages/CADResult";
 import Reports from "./pages/Reports";
 import History from "./pages/History";
 import NotFound from "./pages/NotFound";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgetPassword";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +36,8 @@ const App = () => (
           {/* Auth Routes */}
           <Route path="/doctor/login" element={<DoctorLogin />} />
           <Route path="/patient/login" element={<PatientLogin />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           
           {/* Doctor Routes */}
           <Route path="/doctor/dashboard" element={<DoctorDashboard />} />

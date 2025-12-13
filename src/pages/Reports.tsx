@@ -2,30 +2,36 @@ import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { MedicalCard } from "@/components/shared/MedicalCard";
 import { ECGWaveform } from "@/components/shared/ECGWaveform";
+
 import { Button } from "@/components/ui/button";
 import {
   FileText,
   Download,
   User,
-  Calendar,
   Activity,
   Heart,
   CheckCircle,
   Printer,
 } from "lucide-react";
+import { defaultPatientInfo, detailedAnalysis, patientInfoFields, recommendations } from "@/utils/data/reportData";
+import { QuickStatCard } from "@/components/shared/QuickStarCard";
+
+
+const ecgStats = [
+  { value: "75", label: "Heart Rate (BPM)" },
+  { value: "Normal", label: "Sinus Rhythm" },
+  { value: "10 sec", label: "Recording Duration" },
+];
 
 const Reports = () => {
   const location = useLocation();
   const userType = location.pathname.includes("doctor") ? "doctor" : "patient";
 
-  const patientInfo = {
-    name: "John Doe",
-    id: "PAT-12345",
-    age: 45,
-    gender: "Male",
-    bloodType: "O+",
-    date: "December 3, 2024",
-    doctor: "Dr. Sarah Smith",
+  const getPatientFieldValue = (field: typeof patientInfoFields[0]) => {
+    if ('value' in field) return field.value;
+    const value = defaultPatientInfo[field.key];
+    const suffix = 'suffix' in field ? field.suffix : '';
+    return `${value}${suffix}`;
   };
 
   return (
@@ -73,7 +79,7 @@ const Reports = () => {
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Report ID</p>
               <p className="font-mono font-medium text-card-foreground">
-                RPT-2024-{patientInfo.id}
+                RPT-2024-{defaultPatientInfo.id}
               </p>
             </div>
           </div>
@@ -86,19 +92,10 @@ const Reports = () => {
             Patient Information
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: "Patient Name", value: patientInfo.name },
-              { label: "Patient ID", value: patientInfo.id },
-              { label: "Age", value: `${patientInfo.age} years` },
-              { label: "Gender", value: patientInfo.gender },
-              { label: "Blood Type", value: patientInfo.bloodType },
-              { label: "Examination Date", value: patientInfo.date },
-              { label: "Attending Doctor", value: patientInfo.doctor },
-              { label: "Department", value: "Cardiology" },
-            ].map((item, index) => (
+            {patientInfoFields.map((field, index) => (
               <div key={index} className="p-3 rounded-xl bg-muted/10">
-                <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
-                <p className="font-medium text-card-foreground">{item.value}</p>
+                <p className="text-xs text-muted-foreground mb-1">{field.label}</p>
+                <p className="font-medium text-card-foreground">{getPatientFieldValue(field)}</p>
               </div>
             ))}
           </div>
@@ -114,18 +111,9 @@ const Reports = () => {
             <ECGWaveform className="h-24" />
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 rounded-xl bg-muted/10">
-              <p className="text-2xl font-bold text-card-foreground">75</p>
-              <p className="text-xs text-muted-foreground">Heart Rate (BPM)</p>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-muted/10">
-              <p className="text-2xl font-bold text-card-foreground">Normal</p>
-              <p className="text-xs text-muted-foreground">Sinus Rhythm</p>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-muted/10">
-              <p className="text-2xl font-bold text-card-foreground">10 sec</p>
-              <p className="text-xs text-muted-foreground">Recording Duration</p>
-            </div>
+            {ecgStats.map((stat, index) => (
+              <QuickStatCard key={index} value={stat.value} label={stat.label} />
+            ))}
           </div>
         </div>
 
@@ -159,14 +147,7 @@ const Reports = () => {
             Detailed Analysis
           </h3>
           <div className="space-y-3">
-            {[
-              { parameter: "P Wave", finding: "Normal morphology and duration", status: "normal" },
-              { parameter: "PR Interval", finding: "120-200ms (Normal range)", status: "normal" },
-              { parameter: "QRS Complex", finding: "Normal duration and axis", status: "normal" },
-              { parameter: "ST Segment", finding: "No significant elevation or depression", status: "normal" },
-              { parameter: "T Wave", finding: "Upright in leads I, II, V5-V6", status: "normal" },
-              { parameter: "QT Interval", finding: "Within normal limits", status: "normal" },
-            ].map((item, index) => (
+            {detailedAnalysis.map((item, index) => (
               <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-muted/10">
                 <div>
                   <p className="font-medium text-card-foreground">{item.parameter}</p>
@@ -187,11 +168,9 @@ const Reports = () => {
           </h3>
           <div className="p-4 rounded-xl bg-muted/10">
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• Continue regular cardiovascular health monitoring</li>
-              <li>• Maintain a balanced diet low in saturated fats</li>
-              <li>• Engage in regular physical activity (30 min/day)</li>
-              <li>• Schedule follow-up ECG in 12 months</li>
-              <li>• Consult physician if experiencing chest pain or shortness of breath</li>
+              {recommendations.map((item, index) => (
+                <li key={index}>• {item}</li>
+              ))}
             </ul>
           </div>
         </div>
@@ -205,7 +184,7 @@ const Reports = () => {
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Verified by</p>
-              <p className="font-medium text-card-foreground">{patientInfo.doctor}</p>
+              <p className="font-medium text-card-foreground">{defaultPatientInfo.doctor}</p>
             </div>
           </div>
         </div>

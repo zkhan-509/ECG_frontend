@@ -1,9 +1,21 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MedicalCard } from "@/components/shared/MedicalCard";
 import { ECGWaveform } from "@/components/shared/ECGWaveform";
 import { LiveECGSignal } from "@/components/shared/LiveECGSignal";
-import { Heart, Stethoscope, User, Activity, Shield, Zap } from "lucide-react";
+import { Heart, Stethoscope, User, Activity } from "lucide-react";
+import { features } from "@/utils/data/indexData";
+
+const navLinks = [
+  { to: "/doctor/login", label: "Doctor Login", variant: "ghost" as const },
+  { to: "/patient/login", label: "Patient Login", variant: "outline" as const },
+];
+
+const portalButtons = [
+  { to: "/doctor/login", label: "Doctor Portal", icon: Stethoscope, variant: "medical" as const },
+  { to: "/patient/login", label: "Patient Portal", icon: User, variant: "success" as const },
+];
 
 const Index = () => {
   return (
@@ -16,15 +28,11 @@ const Index = () => {
 
       {/* ECG Background */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/4 left-0 right-0">
-          <ECGWaveform className="h-20" />
-        </div>
-        <div className="absolute top-1/2 left-0 right-0">
-          <ECGWaveform className="h-20" />
-        </div>
-        <div className="absolute top-3/4 left-0 right-0">
-          <ECGWaveform className="h-20" />
-        </div>
+        {[1/4, 1/2, 3/4].map((position, index) => (
+          <div key={index} className="absolute left-0 right-0" style={{ top: `${position * 100}%` }}>
+            <ECGWaveform className="h-20" />
+          </div>
+        ))}
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-12">
@@ -40,12 +48,11 @@ const Index = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/doctor/login">
-              <Button variant="ghost">Doctor Login</Button>
-            </Link>
-            <Link to="/patient/login">
-              <Button variant="outline">Patient Login</Button>
-            </Link>
+            {navLinks.map((link) => (
+              <Link key={link.to} to={link.to}>
+                <Button variant={link.variant}>{link.label}</Button>
+              </Link>
+            ))}
           </div>
         </nav>
 
@@ -67,18 +74,14 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/doctor/login">
-              <Button variant="medical" size="xl" className="min-w-[200px]">
-                <Stethoscope className="w-5 h-5 mr-2" />
-                Doctor Portal
-              </Button>
-            </Link>
-            <Link to="/patient/login">
-              <Button variant="success" size="xl" className="min-w-[200px]">
-                <User className="w-5 h-5 mr-2" />
-                Patient Portal
-              </Button>
-            </Link>
+            {portalButtons.map((button) => (
+              <Link key={button.to} to={button.to}>
+                <Button variant={button.variant} size="xl" className="min-w-[200px]">
+                  <button.icon className="w-5 h-5 mr-2" />
+                  {button.label}
+                </Button>
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -101,26 +104,7 @@ const Index = () => {
 
         {/* Features */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-20">
-          {[
-            {
-              icon: Zap,
-              title: "Fast Analysis",
-              description: "Get CAD detection results in seconds with our optimized ML model",
-              color: "primary",
-            },
-            {
-              icon: Shield,
-              title: "97.8% Accuracy",
-              description: "Highly accurate detection powered by deep learning algorithms",
-              color: "accent",
-            },
-            {
-              icon: Activity,
-              title: "Real-time Monitoring",
-              description: "Upload and analyze ECG signals instantly with visual feedback",
-              color: "primary",
-            },
-          ].map((feature, index) => (
+          {features.map((feature, index) => (
             <MedicalCard key={index} className="text-center">
               <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4 ${
                 feature.color === "primary" ? "bg-primary/10" : "bg-accent/10"

@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { StatCard } from "@/components/shared/StatCard";
 import { MedicalCard } from "@/components/shared/MedicalCard";
@@ -13,13 +14,47 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { recentPatients } from "@/utils/data/doctorDashboardData";
 
-const recentPatients = [
-  { id: "PAT-001", name: "John Smith", date: "Today, 10:30 AM", status: "CAD Detected", risk: "high" },
-  { id: "PAT-002", name: "Emily Davis", date: "Today, 09:15 AM", status: "Normal", risk: "low" },
-  { id: "PAT-003", name: "Michael Brown", date: "Yesterday", status: "Normal", risk: "low" },
-  { id: "PAT-004", name: "Sarah Wilson", date: "Yesterday", status: "CAD Detected", risk: "high" },
+const statsConfig = [
+  {
+    title: "Total ECGs Analyzed",
+    value: "1,284",
+    subtitle: "This month",
+    icon: Activity,
+    trend: { value: 12, positive: true },
+    variant: "primary" as const,
+  },
+  {
+    title: "CAD Detected",
+    value: "89",
+    subtitle: "Requires attention",
+    icon: FileHeart,
+    trend: { value: 8, positive: false },
+    variant: "warning" as const,
+  },
+  {
+    title: "Detection Accuracy",
+    value: "97.8%",
+    subtitle: "ML Model performance",
+    icon: TrendingUp,
+    variant: "success" as const,
+  },
+  {
+    title: "Pending Reviews",
+    value: "12",
+    subtitle: "Awaiting analysis",
+    icon: AlertTriangle,
+    variant: "default" as const,
+  },
 ];
+
+const quickActions = [
+  { to: "/doctor/upload", label: "Upload New ECG", icon: Activity, variant: "medical" as const },
+  { to: "/doctor/reports", label: "Generate Report", icon: FileHeart, variant: "outline" as const },
+];
+
+const tableHeaders = ["Patient", "Date", "Result", "Action"];
 
 const DoctorDashboard = () => {
   return (
@@ -36,36 +71,17 @@ const DoctorDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title="Total ECGs Analyzed"
-          value="1,284"
-          subtitle="This month"
-          icon={Activity}
-          trend={{ value: 12, positive: true }}
-          variant="primary"
-        />
-        <StatCard
-          title="CAD Detected"
-          value="89"
-          subtitle="Requires attention"
-          icon={FileHeart}
-          trend={{ value: 8, positive: false }}
-          variant="warning"
-        />
-        <StatCard
-          title="Detection Accuracy"
-          value="97.8%"
-          subtitle="ML Model performance"
-          icon={TrendingUp}
-          variant="success"
-        />
-        <StatCard
-          title="Pending Reviews"
-          value="12"
-          subtitle="Awaiting analysis"
-          icon={AlertTriangle}
-          variant="default"
-        />
+        {statsConfig.map((stat, index) => (
+          <StatCard
+            key={index}
+            title={stat.title}
+            value={stat.value}
+            subtitle={stat.subtitle}
+            icon={stat.icon}
+            trend={stat.trend}
+            variant={stat.variant}
+          />
+        ))}
       </div>
 
       {/* Main Content Grid */}
@@ -105,18 +121,16 @@ const DoctorDashboard = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-muted/30">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Patient
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Date
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Result
-                  </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Action
-                  </th>
+                  {tableHeaders.map((header, index) => (
+                    <th
+                      key={header}
+                      className={`py-3 px-4 text-sm font-medium text-muted-foreground ${
+                        index === tableHeaders.length - 1 ? "text-right" : "text-left"
+                      }`}
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -177,18 +191,14 @@ const DoctorDashboard = () => {
               Quick Actions
             </h2>
             <div className="space-y-3">
-              <Link to="/doctor/upload">
-                <Button variant="medical" className="w-full justify-start">
-                  <Activity className="w-5 h-5 mr-2" />
-                  Upload New ECG
-                </Button>
-              </Link>
-              <Link to="/doctor/reports">
-                <Button variant="outline" className="w-full justify-start">
-                  <FileHeart className="w-5 h-5 mr-2" />
-                  Generate Report
-                </Button>
-              </Link>
+              {quickActions.map((action) => (
+                <Link key={action.to} to={action.to}>
+                  <Button variant={action.variant} className="w-full justify-start">
+                    <action.icon className="w-5 h-5 mr-2" />
+                    {action.label}
+                  </Button>
+                </Link>
+              ))}
             </div>
           </MedicalCard>
 

@@ -1,6 +1,8 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { MedicalCard } from "@/components/shared/MedicalCard";
 import { LiveECGSignal } from "@/components/shared/LiveECGSignal";
+
 import {
   Heart,
   Activity,
@@ -12,6 +14,18 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { QuickStatCard } from "@/components/shared/QuickStarCard";
+
+const ecgStats = [
+  { value: "72", label: "Heart Rate (BPM)" },
+  { value: "Normal", label: "Rhythm" },
+  { value: "97.8%", label: "Confidence", isAccent: true },
+];
+
+const quickActions = [
+  { to: "/patient/upload", label: "Upload New ECG", icon: Activity, variant: "success" as const },
+  { to: "/patient/reports", label: "My Reports", icon: FileText, variant: "outline" as const },
+];
 
 const PatientDashboard = () => {
   return (
@@ -73,18 +87,14 @@ const PatientDashboard = () => {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 rounded-xl bg-muted/20">
-              <p className="text-2xl font-bold text-card-foreground">72</p>
-              <p className="text-xs text-muted-foreground">Heart Rate (BPM)</p>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-muted/20">
-              <p className="text-2xl font-bold text-card-foreground">Normal</p>
-              <p className="text-xs text-muted-foreground">Rhythm</p>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-muted/20">
-              <p className="text-2xl font-bold text-accent">97.8%</p>
-              <p className="text-xs text-muted-foreground">Confidence</p>
-            </div>
+            {ecgStats.map((stat, index) => (
+              <QuickStatCard
+                key={index}
+                value={stat.value}
+                label={stat.label}
+                isAccent={stat.isAccent}
+              />
+            ))}
           </div>
         </MedicalCard>
 
@@ -124,18 +134,14 @@ const PatientDashboard = () => {
               Quick Actions
             </h2>
             <div className="space-y-3">
-              <Link to="/patient/upload">
-                <Button variant="success" className="w-full justify-start">
-                  <Activity className="w-5 h-5 mr-2" />
-                  Upload New ECG
-                </Button>
-              </Link>
-              <Link to="/patient/reports">
-                <Button variant="outline" className="w-full justify-start">
-                  <FileText className="w-5 h-5 mr-2" />
-                  My Reports
-                </Button>
-              </Link>
+              {quickActions.map((action) => (
+                <Link key={action.to} to={action.to}>
+                  <Button variant={action.variant} className="w-full justify-start">
+                    <action.icon className="w-5 h-5 mr-2" />
+                    {action.label}
+                  </Button>
+                </Link>
+              ))}
             </div>
           </MedicalCard>
 

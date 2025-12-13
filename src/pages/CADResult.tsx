@@ -1,7 +1,10 @@
+
 import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { MedicalCard } from "@/components/shared/MedicalCard";
 import { ECGWaveform } from "@/components/shared/ECGWaveform";
+import { InfoItem } from "@/components/shared/InfoItem";
+import { KeyIndicatorItem } from "@/components/shared/KeyIndicatorItem";
 import { Button } from "@/components/ui/button";
 import {
   Heart,
@@ -12,16 +15,15 @@ import {
   TrendingUp,
   FileText,
 } from "lucide-react";
-
-interface ResultProps {
-  isCADDetected?: boolean;
-}
+import { analysisDetails, getKeyIndicators } from "@/utils/data/cadResultData";
+import type { ResultProps } from "@/utils/types";
 
 const CADResult = ({ isCADDetected = false }: ResultProps) => {
   const location = useLocation();
   const userType = location.pathname.includes("doctor") ? "doctor" : "patient";
 
   const confidence = isCADDetected ? 87.3 : 97.8;
+  const keyIndicators = getKeyIndicators(isCADDetected);
 
   return (
     <DashboardLayout userType={userType}>
@@ -125,16 +127,8 @@ const CADResult = ({ isCADDetected = false }: ResultProps) => {
               Analysis Details
             </h2>
             <div className="space-y-4">
-              {[
-                { label: "Model Version", value: "v2.4.1" },
-                { label: "Analysis Time", value: "2.3 seconds" },
-                { label: "ECG Duration", value: "10 seconds" },
-                { label: "Features Analyzed", value: "48" },
-              ].map((item, index) => (
-                <div key={index} className="flex justify-between items-center py-2 border-b border-muted/20 last:border-0">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className="text-sm font-medium text-card-foreground">{item.value}</span>
-                </div>
+              {analysisDetails.map((item, index) => (
+                <InfoItem key={index} label={item.label} value={item.value} />
               ))}
             </div>
           </MedicalCard>
@@ -148,20 +142,13 @@ const CADResult = ({ isCADDetected = false }: ResultProps) => {
               </h2>
             </div>
             <div className="space-y-3">
-              {[
-                { name: "ST Depression", value: isCADDetected ? "Detected" : "Normal", alert: isCADDetected },
-                { name: "T Wave Inversion", value: isCADDetected ? "Present" : "Absent", alert: isCADDetected },
-                { name: "QRS Duration", value: "Normal", alert: false },
-                { name: "Heart Rate", value: "75 BPM", alert: false },
-              ].map((item, index) => (
-                <div key={index} className="flex justify-between items-center p-2 rounded-lg bg-muted/10">
-                  <span className="text-sm text-muted-foreground">{item.name}</span>
-                  <span className={`text-sm font-medium ${
-                    item.alert ? "text-destructive" : "text-accent"
-                  }`}>
-                    {item.value}
-                  </span>
-                </div>
+              {keyIndicators.map((item, index) => (
+                <KeyIndicatorItem
+                  key={index}
+                  name={item.name}
+                  value={item.value}
+                  alert={item.alert}
+                />
               ))}
             </div>
           </MedicalCard>
